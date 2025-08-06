@@ -11,10 +11,15 @@ const PORT = process.env.PORT || 4000;
 // Приймаємо JSON у тілі запиту
 app.use(express.json());
 
-// Дозволяємо CORS (заміни origin на адресу фронтенда)
+// Дозволяємо CORS (на Railway краще явно вказати фронтенд)
 app.use(cors({
-  origin: '*', // для тесту можна так, а потім звузити до фронтенда
+  origin: '*', // для тесту можна так, але на проді краще обмежити
 }));
+
+// Перевірка доступності сервера
+app.get('/', (req, res) => {
+  res.send('Server is running');
+});
 
 // Ендпоінт для збереження кроків
 app.post('/save-steps', (req, res) => {
@@ -32,11 +37,12 @@ app.post('/save-steps', (req, res) => {
       return res.status(500).json({ error: 'Failed to write file' });
     }
 
+    console.log(`Saved steps: ${data.steps} at ${data.timestamp}`);
     res.json({ message: 'Steps saved successfully' });
   });
 });
 
-// Запуск сервера
-app.listen(PORT, () => {
+// Запуск сервера на Railway
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });
