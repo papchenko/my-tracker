@@ -4,32 +4,17 @@ const path = require('path');
 const cors = require('cors');
 
 const app = express();
-const PORT = 4000;
 
-// Дозволені адреси фронтенду для CORS
-const allowedOrigins = [
-  'http://localhost:5173',
-  'https://1568c40e270f.ngrok-free.app/'
-];
+// Використовуємо порт із змінної середовища або 4000 за замовчуванням
+const PORT = process.env.PORT || 4000;
 
+// Приймаємо JSON у тілі запиту
 app.use(express.json());
 
+// Дозволяємо CORS (заміни origin на адресу фронтенда)
 app.use(cors({
-  origin: function(origin, callback){
-    // Якщо запит із non-browser клієнта (origin === undefined), дозволяємо
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'CORS policy: доступ із цього origin заборонений.';
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  }
+  origin: '*', // для тесту можна так, а потім звузити до фронтенда
 }));
-
-// Для перевірки роботи сервера (можна видалити пізніше)
-app.get('/', (req, res) => {
-  res.send('Server is running');
-});
 
 // Ендпоінт для збереження кроків
 app.post('/save-steps', (req, res) => {
@@ -51,7 +36,7 @@ app.post('/save-steps', (req, res) => {
   });
 });
 
-// Запуск сервера на всіх інтерфейсах
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on http://0.0.0.0:${PORT}`);
+// Запуск сервера
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
